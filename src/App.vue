@@ -1,28 +1,29 @@
 <template>
   <div>
-  <Header></Header>
-
-  <router-view></router-view>
-  <Footer></Footer>
+    <Header></Header>
+    <router-view></router-view>
+    <Footer v-if="!$route.meta.isFooterHide"></Footer>
   </div>
 </template>
 
 <script>
-import Header from './components/Header'
-import Footer from './components/Footer'
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 export default {
-  name: 'App',
-  components:{
-      Header,
-      Footer
-  }
-}
+  name: "App",
+  components: {
+    Header,
+    Footer,
+  },
+  
+};
 </script>
 
 <style lang="less" scoped>
-    html,body{
-        padding: 0;
-        margin: 0;
-    }
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
 </style>

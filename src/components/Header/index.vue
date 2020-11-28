@@ -28,7 +28,7 @@
         <router-link to="/"><img src="./images/logo.png" alt="" /></router-link>
       </h1>
       <div class="search">
-        <input type="text" />
+        <input type="text" v-model="searchText" />
         <button class="header-btn" @click="search">搜索</button>
       </div>
     </div>
@@ -38,9 +38,27 @@
  <script>
 export default {
   name: "Header",
+  data() {
+    return {
+        searchText: "",
+    }
+  },
   methods: {
     search() {
-        this.$router.push('/search')
+      const { searchText } = this;
+      //方法一：拼串形式
+    //   const params = searchText ? `/${searchText}` : "";
+    //   const location = "/search" + params;
+    //   this.$router.push(location);
+      //方法二：具名路由
+      const location = {
+          name:'search',
+      }
+      if(searchText){
+          location.params = {searchText}
+          this.$router.push(location)
+      }
+        this.$router.push(location)
     },
   },
 };
