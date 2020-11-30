@@ -12,9 +12,3 @@ export const reqLogin = (phone,password)=>{
     })
 }
 
-export const reqTypeNav = ()=>{
-    return request({
-        method:'GET',
-        url:'/product/getBaseCategoryList',
-    })
-}

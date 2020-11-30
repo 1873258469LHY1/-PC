@@ -40,25 +40,33 @@ export default {
   name: "Header",
   data() {
     return {
-        searchText: "",
-    }
+      searchText: "",
+    };
   },
   methods: {
     search() {
+        // 判断params参数存不存在（因为搜索框可能为空）
       const { searchText } = this;
       //方法一：拼串形式
-    //   const params = searchText ? `/${searchText}` : "";
-    //   const location = "/search" + params;
-    //   this.$router.push(location);
+      //   const params = searchText ? `/${searchText}` : "";
+      //   const location = "/search" + params;
+      //   this.$router.push(location);
       //方法二：具名路由
       const location = {
-          name:'search',
+        name: "search",
+      };
+      if (searchText) {
+        location.params = { searchText };
+       
       }
-      if(searchText){
-          location.params = {searchText}
-          this.$router.push(location)
+        // 判断query参数存不存在
+      const { categoryName } = this.$route.query;
+
+      if (categoryName) {
+        location.query = this.$route.query;
       }
-        this.$router.push(location)
+
+      this.$router.push(location);
     },
   },
 };

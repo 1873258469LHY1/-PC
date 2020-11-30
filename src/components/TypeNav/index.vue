@@ -1,8 +1,8 @@
 <template>
   <!-- 商品分类导航 -->
   <div class="type-nav">
-    <div class="container">
-      <h2 class="all">全部商品分类</h2>
+    <div class="container" @mouseleave="isSearchShowNav = false">
+      <h2 class="all" @mouseenter="isSearchShowNav = true">全部商品分类</h2>
       <nav class="nav">
         <a href="###">服装城</a>
         <a href="###">美妆馆</a>
@@ -13,48 +13,109 @@
         <a href="###">有趣</a>
         <a href="###">秒杀</a>
       </nav>
-      <div class="sort">
-        <div class="all-sort-list2">
-          <div class="item bo" v-for="category in categorys" :key="category.categoryId">
-            <h3>
-              <a href="">{{category.categoryName}}</a>
-            </h3>
-            <div class="item-list clearfix">
-              <div class="subitem">
-                <dl class="fore" v-for="Child in category.categoryChild" :key="Child.categoryId">
-                  <dt >
-                    <a href="">{{Child.categoryName}}</a>
-                  </dt>
-                  <dd >
-                    <em v-for="grandChild in Child.categoryChild" :key="grandChild.categoryId">
-                      <a href="">{{grandChild.categoryName}}</a>
-                    </em>
-                  </dd>
-                </dl>
+      <transition name="navDown">
+        <div class="sort" v-show="isHomeShowNav || isSearchShowNav">
+          <div class="all-sort-list2" @click="handleGetCategory">
+            <div
+              class="item bo"
+              v-for="category in categorys"
+              :key="category.categoryId"
+            >
+              <h3>
+                <a
+                  :data-categoryName="category.categoryName"
+                  :data-categoryId="category.categoryId"
+                  :data-grade="1"
+                  >{{ category.categoryName }}</a
+                >
+              </h3>
+              <div class="item-list clearfix">
+                <div class="subitem">
+                  <dl
+                    class="fore"
+                    v-for="Child in category.categoryChild"
+                    :key="Child.categoryId"
+                  >
+                    <dt>
+                      <a
+                        :data-categoryName="Child.categoryName"
+                        :data-categoryId="Child.categoryId"
+                        :data-grade="2"
+                        >{{ Child.categoryName }}</a
+                      >
+                    </dt>
+                    <dd>
+                      <em
+                        v-for="grandChild in Child.categoryChild"
+                        :key="grandChild.categoryId"
+                      >
+                        <a
+                          :data-categoryName="grandChild.categoryName"
+                          :data-categoryId="grandChild.categoryId"
+                          :data-grade="3"
+                          >{{ grandChild.categoryName }}</a
+                        >
+                      </em>
+                    </dd>
+                  </dl>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </transition>
     </div>
   </div>
 </template>
 
 <script>
-import { reqTypeNav } from "@api/user";
+import { mapState, mapActions } from "vuex";
+
 export default {
   name: "TypeNav",
   data() {
     return {
-      categorys: [],
+      isHomeShowNav: this.$route.path === "/",
+      isSearchShowNav: false,
     };
   },
-  async mounted() {
-    const result = await reqTypeNav();
-    this.categorys = result.slice(0,15)
-    console.log(result);
+  computed: {
+    ...mapState({
+      categorys: (state) => state.home.categorys,
+    }),
   },
-}; 
+  methods: {
+    ...mapActions(["getTypeNav"]),
+    //   事件委托获取categorys
+    handleGetCategory(e) {
+      // 解构赋值获取数据传递到事件委托中
+      const { categoryname, categoryid, grade } = e.target.dataset;
+      // 防止点击空白处也会触发事件委托
+      if (!categoryname) return;
+      // 点击搜索的时候改变TypeNav的状态
+      this.isSearchShowNav = false;
+      // 编程式导航点击跳转，判断有没有传递params，query必传不用判断，因为点击时会自动获取
+      const location = {
+        name: "search",
+        query: {
+          categoryName: categoryname,
+          [`category${grade}Id`]: categoryid,
+        },
+      };
+      // 判断有没有传递params
+      const { searchText } = this.$route.params;
+      if (searchText) {
+        location.params = { searchText };
+      }
+
+      this.$router.push(location);
+    },
+  },
+  mounted() {
+    if (this.categorys.length) return;
+    this.getTypeNav();
+  },
+};
 </script>
 
 <style  lang="less" scoped>
@@ -97,6 +158,14 @@ export default {
       position: absolute;
       background: #fafafa;
       z-index: 999;
+
+      &.navDown-enter-active {
+        transition: height 0.5s;
+        overflow: hidden;
+      }
+      &.navDown-enter {
+        height: 0px;
+      }
 
       .all-sort-list2 {
         .item {
