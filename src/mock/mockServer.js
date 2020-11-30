@@ -7,7 +7,7 @@ Mock.mock('/mock/banners','get',{
     data:banners
 })
 
-Mock.mock('/mock/floor','get',{
+Mock.mock('/mock/floors','get',{
     code:200,
     'data|2-4':floors
 })

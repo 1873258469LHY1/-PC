@@ -27,6 +27,8 @@ import Rank from "./Rank/Rank";
 import TodayRecommend from "./TodayRecommend/TodayRecommend";
 import TypeNav from "@comps/TypeNav";
 
+import { mapActions, mapState } from "vuex";
+
 export default {
   name: "Home",
   components: {
@@ -37,6 +39,17 @@ export default {
     Rank,
     TodayRecommend,
     TypeNav,
+  },
+  computed: {
+    ...mapState({
+      floors: (state) => state.home.floors,
+    }),
+  },
+  methods: {
+    ...mapActions(["getFloors"]),
+  },
+  mounted() {
+    this.getFloors();
   },
 };
 </script>
