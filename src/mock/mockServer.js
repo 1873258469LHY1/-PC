@@ -4,10 +4,10 @@ import floors from './cfloors'
 
 Mock.mock('/mock/banners','get',{
     code:200,
-    data:banners
+    'data|3-5':banners
 })
 
 Mock.mock('/mock/floors','get',{
     code:200,
-    'data|2-4':floors
+    'data|2':floors
 })

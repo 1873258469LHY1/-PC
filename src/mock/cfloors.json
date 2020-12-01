@@ -1,25 +1,22 @@
 [
   {
-    "id|+1": "001",
+    "id|+1": 1,
     "name": "@ctitle(4)",
-    "keywords|4-6": ["@cname(4,6)"],
-    "imgUrl": "@image('300x300','@color')",
-    "navList|5-8": [
+    "keywords|6": ["@ctitle(3,6)"],
+    "imgUrl": "@image('210x250')",
+    "navList|6-10": [
       {
         "url": "#",
-        "text": "@cname(2,5)"
+        "text": "@ctitle(2,4)"
       }
     ],
-    "carouselList|3-5": [
+    "carouselList|3": [
       {
-        "id|+1": "0011",
-        "imgUrl": "@image('300x300','@color')"
+        "id|+1": 1,
+        "imgUrl": "@image('330x360', '@color')"
       }
     ],
-    "recommendList|3-5": [
-        "@image('300x300','@color')"
-    ],
-    "bigImg": "@image('300x300','@color')"
+    "recommendList|4": ["@image('200x200', '@color')"],
+    "bigImg": "@image('220x360', '@color')"
   }
-  
 ]
