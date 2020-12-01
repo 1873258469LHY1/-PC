@@ -4,13 +4,15 @@
       <div class="title clearfix">
         <h3 class="fl">{{ floor.name }}</h3>
         <div class="fr">
-          <ul class="nav-tabs clearfix">
+          <ul class="nav-tabs clearfix" @click="changColor">
             <li
-              class="active"
+            
               v-for="(item, index) in floor.navList"
               :key="index"
+              :class="{active:flag === item.text}"
             >
-              <a :href="item.url" data-toggle="tab">{{ item.text }}</a>
+              <!--<a :href="item.url" data-toggle="tab">{{ item.text }}</a> -->
+              <a data-toggle="tab">{{ item.text }}</a>
             </li>
           </ul>
         </div>
@@ -61,12 +63,22 @@
 import Carousel from "@comps/Carousel";
 export default {
   name: "Floor",
+  data(){
+      return{
+          flag:''
+      }
+  },
   props: {
     floor: Object,
   },
   components: {
     Carousel,
   },
+  methods:{
+      changColor(e){
+          this.flag = e.target.textContent
+      }
+  }
 };
 </script>
 
