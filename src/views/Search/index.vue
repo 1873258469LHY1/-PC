@@ -11,15 +11,30 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x">手机</li>
-            <li class="with-x">iphone<i>×</i></li>
-            <li class="with-x">华为<i>×</i></li>
-            <li class="with-x">OPPO<i>×</i></li>
+            <li class="with-x" v-show="options.keyword" @click="delKeyword">
+              {{ options.keyword }}<i>×</i>
+            </li>
+            <li
+              class="with-x"
+              v-show="options.categoryName"
+              @click="delCategoryName"
+            >
+             {{ options.categoryName }}<i>×</i>
+            </li>
+            <li class="with-x" v-show="options.trademark" @click="delTrademark">
+              品牌：{{ options.trademark.split(":")[1] }}<i>×</i>
+            </li>
+            <li class="with-x" v-for="(prop,index) in options.props" :key="index" @click="delAttrsList">
+              {{ prop.split(":")[2] }}:{{ prop.split(":")[1] }}<i>×</i>
+            </li>
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector />
+        <SearchSelector
+          :addTrademark="addTrademark"
+          :addAttrsList="addAttrsList"
+        />
 
         <!--details-->
         <div class="details clearfix">
@@ -129,6 +144,22 @@ import TypeNav from "@comps/TypeNav";
 import { mapActions, mapGetters } from "vuex";
 export default {
   name: "Search",
+  data() {
+    return {
+      options: {
+        category1Id: "", // 一级分类id
+        category2Id: "", // 二级分类id
+        category3Id: "", // 三级分类id
+        categoryName: "", // 分类名称
+        keyword: "", // 搜索内容（搜索关键字）
+        order: "", // 排序方式：1：综合排序  2：价格排序   asc 升序  desc 降序
+        pageNo: 1, // 分页的页码（第几页）
+        pageSize: 5, // 分页的每页商品数量
+        props: [], // 商品属性
+        trademark: "", // 品牌
+      },
+    };
+  },
   components: {
     SearchSelector,
     TypeNav,
@@ -136,11 +167,81 @@ export default {
   computed: {
     ...mapGetters(["goodsList"]),
   },
+  watch: {
+    //   $route:{
+    //       handler(){
+    //           this.updataGoodsList()
+    //       },
+    //       immediate:true
+    //   }
+    $route() {
+      this.updataGoodsList();
+    },
+  },
   methods: {
     ...mapActions(["getProduct"]),
+    // 封装更新数据的方法
+    updataGoodsList() {
+      const { searchText: keyword } = this.$route.params;
+      const {
+        category1Id,
+        category2Id,
+        category3Id,
+        categoryName,
+      } = this.$route.query;
+      const options = {
+        ...this.options,
+        keyword,
+        category1Id,
+        category2Id,
+        category3Id,
+        categoryName,
+      };
+      this.options = options;
+      this.getProduct(options);
+    },
+    // 删除关键字
+    delKeyword() {
+      this.options.keyword = "";
+      this.$bus.$emit("clearKeyword");
+      this.$router.replace({
+        name: "search",
+        query: this.$route.query,
+      });
+    },
+    // 删除query参数
+    delCategoryName() {
+      this.options.categoryName = "";
+      this.options.category1Id = "";
+      this.options.category2Id = "";
+      this.options.category3Id = "";
+      this.$router.replace({
+        name: "search",
+        params: this.$route.params,
+      });
+    },
+    // 添加品牌数据
+    addTrademark(trademark) {
+      this.options.trademark = trademark;
+      this.updataGoodsList();
+    },
+    //删除品牌数据
+    delTrademark() {
+      this.options.trademark = "";
+      this.updataGoodsList();
+    },
+    // 添加品牌属性
+    addAttrsList(prop) {
+      this.options.props.push(prop);
+      this.updataGoodsList();
+    },
+    delAttrsList(index) {
+      this.options.props.splice(index,1);
+      this.updataGoodsList();
+    },
   },
   mounted() {
-    this.getProduct();
+    this.updataGoodsList();
   },
 };
 </script>

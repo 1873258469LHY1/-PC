@@ -13,7 +13,10 @@ import './styles/reset.css'
 import './plugins/element.js'
 
 new Vue({
-  render: h => h(App),
-  router,
-  store
+    beforeCreate() {
+        Vue.prototype.$bus = this
+    },
+    render: h => h(App),
+    router,
+    store
 }).$mount('#app')

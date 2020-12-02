@@ -17,15 +17,16 @@ export default {
         }
     },
     actions: {
-        async getProduct({ commit, data = {} }) {
+        async getProduct({ commit }, data = {}) {
+            
             const productList = await reqProduct(data);
             commit('GET_PRODUCT', productList)
-
         }
     },
     mutations: {
         GET_PRODUCT(state, productList) {
             state.productList = productList
+            console.log(state.productList)
         },
 
     }

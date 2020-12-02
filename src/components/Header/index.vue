@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     search() {
-        // 判断params参数存不存在（因为搜索框可能为空）
+      // 判断params参数存不存在（因为搜索框可能为空）
       const { searchText } = this;
       //方法一：拼串形式
       //   const params = searchText ? `/${searchText}` : "";
@@ -57,17 +57,25 @@ export default {
       };
       if (searchText) {
         location.params = { searchText };
-       
       }
-        // 判断query参数存不存在
+      // 判断query参数存不存在
       const { categoryName } = this.$route.query;
 
       if (categoryName) {
         location.query = this.$route.query;
       }
-
-      this.$router.push(location);
+      if (this.$route.name === "search") {
+        this.$router.replace(location);
+      } else {
+        this.$router.push(location);
+      }
     },
+  },
+  mounted() {
+    //点击链接，清空搜索框
+    this.$bus.$on("clearKeyword", () => {
+      this.searchText = "";
+    });
   },
 };
 </script> 
