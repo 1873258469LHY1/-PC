@@ -6,10 +6,9 @@
         <div class="fr">
           <ul class="nav-tabs clearfix" @click="changColor">
             <li
-            
               v-for="(item, index) in floor.navList"
               :key="index"
-              :class="{active:flag === item.text}"
+              :class="{ active: flag === item.text }"
             >
               <!--<a :href="item.url" data-toggle="tab">{{ item.text }}</a> -->
               <a data-toggle="tab">{{ item.text }}</a>
@@ -29,7 +28,7 @@
               <img :src="floor.imgUrl" />
             </div>
             <div class="floorBanner">
-              <Carousel :carousels = floor.carouselList ></Carousel>
+              <Carousel :carousels="floor.carouselList"></Carousel>
             </div>
             <div class="split">
               <span class="floor-x-line"></span>
@@ -63,10 +62,10 @@
 import Carousel from "@comps/Carousel";
 export default {
   name: "Floor",
-  data(){
-      return{
-          flag:''
-      }
+  data() {
+    return {
+      flag: "",
+    };
   },
   props: {
     floor: Object,
@@ -74,11 +73,14 @@ export default {
   components: {
     Carousel,
   },
-  methods:{
-      changColor(e){
-          this.flag = e.target.textContent
-      }
-  }
+  methods: {
+    changColor(e) {
+      this.flag = e.target.textContent;
+    },
+  },
+  mounted() {
+    console.log(this);
+  },
 };
 </script>
 

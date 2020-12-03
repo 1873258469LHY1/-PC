@@ -10,6 +10,7 @@ Vue.config.productionTip = false
 import router from './router'
 
 import './styles/reset.css'
+import './styles/iconfont.css'
 import './plugins/element.js'
 
 new Vue({

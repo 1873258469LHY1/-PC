@@ -19,12 +19,17 @@
               v-show="options.categoryName"
               @click="delCategoryName"
             >
-             {{ options.categoryName }}<i>×</i>
+              {{ options.categoryName }}<i>×</i>
             </li>
             <li class="with-x" v-show="options.trademark" @click="delTrademark">
               品牌：{{ options.trademark.split(":")[1] }}<i>×</i>
             </li>
-            <li class="with-x" v-for="(prop,index) in options.props" :key="index" @click="delAttrsList">
+            <li
+              class="with-x"
+              v-for="(prop, index) in options.props"
+              :key="index"
+              @click="delAttrsList"
+            >
               {{ prop.split(":")[2] }}:{{ prop.split(":")[1] }}<i>×</i>
             </li>
           </ul>
@@ -41,23 +46,52 @@
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li
+                  :class="{ active: options.order.includes('1') }"
+                  @click="setOrder('1')"
+                >
+                  <a
+                    >综合<i
+                      :class="{
+                        iconfont: true,
+                        'icon-direction-down': isAllup,
+                        'icon-direction-up': !isAllup,
+                      }"
+                    ></i
+                  ></a>
                 </li>
                 <li>
-                  <a href="#">销量</a>
+                  <a>销量</a>
                 </li>
                 <li>
-                  <a href="#">新品</a>
+                  <a>新品</a>
                 </li>
                 <li>
-                  <a href="#">评价</a>
+                  <a>评价</a>
                 </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <li
+                  :class="{ active: options.order.includes('2') }"
+                  @click="setOrder('2')"
+                >
+                  <a
+                    >价格
+                    <span>
+                      <i
+                        :class="{
+                          iconfont: true,
+                          'icon-arrow-up-filling': true,
+                          deactive: options.order.includes('2') && isPriceup,
+                        }"
+                      ></i>
+                      <i
+                        :class="{
+                          iconfont: true,
+                          'icon-arrow-down-filling': true,
+                          deactive: options.order.includes('2') && !isPriceup,
+                        }"
+                      ></i>
+                    </span>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -67,9 +101,9 @@
               <li class="yui3-u-1-5" v-for="goods in goodsList" :key="goods.id">
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank"
+                    <router-link :to="`/detail/${goods.id}`" target="_blank"
                       ><img :src="goods.defaultImg"
-                    /></a>
+                    /></router-link>
                   </div>
                   <div class="price">
                     <strong>
@@ -104,33 +138,20 @@
             </ul>
           </div>
           <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
+            <el-pagination
+              background
+              prev-text='上一页'
+              next-text='下一页'	
+              :pager-count="7"
+              :current-page="options.pageNo"
+              :page-size="options.pageSize"
+              layout=" prev, pager, next,total"
+              @current-change="handleCurrentChange"
+              @size-change="handleSizeChange"
+              :page-sizes="[5, 10, 15, 20]"
+              :total="productList.total"
+            >
+            </el-pagination>
           </div>
         </div>
       </div>
@@ -141,7 +162,7 @@
 <script>
 import SearchSelector from "./SearchSelector/SearchSelector";
 import TypeNav from "@comps/TypeNav";
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 export default {
   name: "Search",
   data() {
@@ -152,12 +173,14 @@ export default {
         category3Id: "", // 三级分类id
         categoryName: "", // 分类名称
         keyword: "", // 搜索内容（搜索关键字）
-        order: "", // 排序方式：1：综合排序  2：价格排序   asc 升序  desc 降序
+        order: "1:desc", // 排序方式：1：综合排序  2：价格排序   asc 升序  desc 降序
         pageNo: 1, // 分页的页码（第几页）
         pageSize: 5, // 分页的每页商品数量
         props: [], // 商品属性
         trademark: "", // 品牌
       },
+      isAllup: true,
+      isPriceup: true,
     };
   },
   components: {
@@ -165,6 +188,9 @@ export default {
     TypeNav,
   },
   computed: {
+    ...mapState({
+      productList: (state) => state.search.productList,
+    }),
     ...mapGetters(["goodsList"]),
   },
   watch: {
@@ -180,8 +206,17 @@ export default {
   },
   methods: {
     ...mapActions(["getProduct"]),
+    // 页码信息条数发生变化
+    handleSizeChange(pageSize) {
+      this.options.pageSize=pageSize
+      this.updataGoodsList();
+    },
+    // 页码点击时发生变化
+    handleCurrentChange(pageNo) {
+      this.updataGoodsList(pageNo);
+    },
     // 封装更新数据的方法
-    updataGoodsList() {
+    updataGoodsList(pageNo=1) {
       const { searchText: keyword } = this.$route.params;
       const {
         category1Id,
@@ -196,6 +231,7 @@ export default {
         category2Id,
         category3Id,
         categoryName,
+        pageNo
       };
       this.options = options;
       this.getProduct(options);
@@ -222,6 +258,9 @@ export default {
     },
     // 添加品牌数据
     addTrademark(trademark) {
+      // 防止多次发送请求
+      if (this.options.trademark === trademark) return;
+
       this.options.trademark = trademark;
       this.updataGoodsList();
     },
@@ -232,15 +271,43 @@ export default {
     },
     // 添加品牌属性
     addAttrsList(prop) {
+      // 防止多次发送请求
+      if (this.options.props.includes(prop)) return;
+
       this.options.props.push(prop);
       this.updataGoodsList();
     },
+    //删除品牌属性
     delAttrsList(index) {
-      this.options.props.splice(index,1);
+      this.options.props.splice(index, 1);
+      this.updataGoodsList();
+    },
+    //设置升序降序
+    setOrder(order) {
+      let [orderNum, orderType] = this.options.order.split(":");
+      this.options.order = `${order}:${orderType}`;
+      if (orderNum === order) {
+        if (order === "1") {
+          this.isAllup = !this.isAllup;
+          orderType = orderType === "desc" ? "asc" : "desc";
+        } else {
+          this.isPriceup = !this.isPriceup;
+          orderType = orderType === "desc" ? "asc" : "desc";
+        }
+      } else {
+        if (order === "1") {
+          orderType = this.isAllup ? "desc" : "asc";
+        } else {
+          this.isPriceup = false;
+          orderType = "asc";
+        }
+      }
+      this.options.order = `${order}:${orderType}`;
       this.updataGoodsList();
     },
   },
   mounted() {
+    //调用封装好的请求数据方法
     this.updataGoodsList();
   },
 };
@@ -348,11 +415,23 @@ export default {
               line-height: 18px;
 
               a {
-                display: block;
+                display: flex;
                 cursor: pointer;
                 padding: 11px 15px;
                 color: #777;
                 text-decoration: none;
+                span {
+                  display: flex;
+                  flex-direction: column;
+                  line-height: 10px;
+                  padding: 0 5px;
+                  i {
+                    font-size: 14px;
+                    &.deactive {
+                      color: rgba(255, 255, 255, 0.5);
+                    }
+                  }
+                }
               }
 
               &.active {
@@ -493,7 +572,10 @@ export default {
         width: 733px;
         height: 66px;
         overflow: hidden;
-        float: right;
+        // float: right;
+        margin: 0 auto;
+        display:flex;
+        justify-content: center;
 
         .sui-pagination {
           margin: 18px 0;
@@ -512,13 +594,14 @@ export default {
               a {
                 position: relative;
                 float: left;
+                // height: 18px;
                 line-height: 18px;
                 text-decoration: none;
                 background-color: #fff;
                 border: 1px solid #e0e9ee;
                 margin-left: -1px;
                 font-size: 14px;
-                padding: 9px 18px;
+                // padding: 9px 18px;
                 color: #333;
               }
 
