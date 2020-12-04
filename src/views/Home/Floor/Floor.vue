@@ -78,9 +78,6 @@ export default {
       this.flag = e.target.textContent;
     },
   },
-  mounted() {
-    console.log(this);
-  },
 };
 </script>
 

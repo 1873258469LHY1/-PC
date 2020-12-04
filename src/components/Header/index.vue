@@ -71,6 +71,18 @@ export default {
       }
     },
   },
+  watch: {
+    //   进入home时清除搜索框
+   $route: {
+      handler() {
+        if (this.$route.path === "/") {
+          this.$bus.$emit("clearKeyword");
+        }
+      },
+      immediate: true,
+    },
+   
+  },
   mounted() {
     //点击链接，清空搜索框
     this.$bus.$on("clearKeyword", () => {

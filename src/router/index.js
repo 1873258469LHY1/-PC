@@ -51,7 +51,7 @@ export default new VueRouter({
             component: Search,
         },
         {
-            path: '/detail/:goodsCode?',
+            path: '/detail/:goodsId?',
             component: Detail,
         }
     ]

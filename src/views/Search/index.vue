@@ -194,13 +194,8 @@ export default {
     ...mapGetters(["goodsList"]),
   },
   watch: {
-    //   $route:{
-    //       handler(){
-    //           this.updataGoodsList()
-    //       },
-    //       immediate:true
-    //   }
     $route() {
+
       this.updataGoodsList();
     },
   },
@@ -259,7 +254,7 @@ export default {
     // 添加品牌数据
     addTrademark(trademark) {
       // 防止多次发送请求
-      if (this.options.trademark === trademark) return;
+      if (this.options.trademark) return;
 
       this.options.trademark = trademark;
       this.updataGoodsList();
