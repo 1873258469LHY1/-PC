@@ -79,7 +79,7 @@
                 <dt class="title">{{ spuSaleAttr.saleAttrName }}</dt>
                 <dd
                   changepirce="0"
-                  :class="{ active: isChecked }"
+                  :class="{ active: !spuSaleAttrValue.isChecked }"
                   v-for="spuSaleAttrValue in spuSaleAttr.spuSaleAttrValueList"
                   :key="spuSaleAttrValue.id"
                 >
@@ -341,11 +341,6 @@ import TypeNav from "@comps/TypeNav";
 
 export default {
   name: "Detail",
-  data() {
-    return {
-        isChecked:0
-    };
-  },
   computed: {
     ...mapGetters(["categoryView", "spuSaleAttrList", "skuInfo"]),
     ...mapState({
@@ -362,10 +357,6 @@ export default {
   },
   mounted() {
     this.getDetails(this.$route.params.goodsId);
-    // 给商品属性的每一项的第一个添加样式
-    // this.spuSaleAttrList.forEach((item) => {
-    //   item.spuSaleAttrValueList[0].isChecked = 0;
-    // });
   },
 };
 </script>

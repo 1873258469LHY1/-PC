@@ -41,9 +41,14 @@ export default {
       this.ttop = -2 * this.ztop;
     },
   },
-  computed:{
-      ...mapGetters(['skuInfo'])
-  }
+  computed: {
+    ...mapGetters(["skuInfo"]),
+  },
+  mounted() {
+    this.$bus.$on("zoomShow", (imgUrl) => {
+      this.skuInfo.skuDefaultImg = imgUrl;
+    });
+  },
 };
 </script>
 

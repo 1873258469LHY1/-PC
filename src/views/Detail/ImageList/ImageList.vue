@@ -1,8 +1,8 @@
 <template>
   <div>
     <!-- <Carousel /> -->
-    <div class="swiper-container">
-      <div class="swiper-wrapper">
+    <div class="swiper-container" ref="swiper">
+      <div class="swiper-wrapper" @click="sendImgUrl">
         <div
           class="swiper-slide"
           v-for="skuImage in skuInfo.skuImageList"
@@ -26,26 +26,40 @@ export default {
   components: {
     //   Carousel
   },
+  watch: {
+    skuInfo() {
+      this.$nextTick(() => {
+        if(this.imageListSwiper) return
+        this.imageListSwiper = new Swiper(this.$refs.swiper, {
+          slidesPerView: 5,
+          spaceBetween: 0,
+          slidesPerGroup: 5,
+          loop: false,
+          loopFillGroupWithBlank: true,
+          pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+          },
+          navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          },
+        });
+      });
+    },
+  },
+  methods:{
+      sendImgUrl(e){
+          if(!e.target.src) return
+          this.$bus.$emit('zoomShow',e.target.src)
+      }
+  },
   computed: {
     ...mapGetters(["skuInfo"]),
   },
   mounted() {
-    if (this.imageListSwiper) return;
-    this.imageListSwiper = new Swiper(".swiper-container", {
-      slidesPerView: 5,
-      spaceBetween: 0,
-      slidesPerGroup: 5,
-      loop: false,
-      loopFillGroupWithBlank: true,
-      pagination: {
-        el: ".swiper-pagination",
-        clickable: true,
-      },
-      navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-      },
-    });
+    
+    
   },
 };
 </script>
@@ -58,12 +72,12 @@ export default {
   padding: 0 12px;
 
   .swiper-wrapper {
-      margin-left: 10px;
+    margin-left: 10px;
     .swiper-slide {
       width: 56px;
       height: 56px;
-    //   margin: 0 5px;
-    //   padding: 2px;
+      //   margin: 0 5px;
+      //   padding: 2px;
       img {
         width: 100%;
         height: 100%;

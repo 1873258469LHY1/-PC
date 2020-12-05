@@ -6,17 +6,17 @@ Vue.use(VueRouter)
 const push = VueRouter.prototype.push
 const replace = VueRouter.prototype.replace
 
-VueRouter.prototype.push = function(location,onComplete,onAbort){
-    if(onAbort && onComplete){
-        return push.call(this,location,onComplete,onAbort)
+VueRouter.prototype.push = function (location, onComplete, onAbort) {
+    if (onAbort && onComplete) {
+        return push.call(this, location, onComplete, onAbort)
     }
-    return push.call(this,location,onComplete,()=>{})
+    return push.call(this, location, onComplete, () => { })
 }
-VueRouter.prototype.replace = function(location,onComplete,onAbort){
-    if(onAbort && onComplete){
-        return replace.call(this,location,onComplete,onAbort)
+VueRouter.prototype.replace = function (location, onComplete, onAbort) {
+    if (onAbort && onComplete) {
+        return replace.call(this, location, onComplete, onAbort)
     }
-    return replace.call(this,location,onComplete,()=>{})
+    return replace.call(this, location, onComplete, () => { })
 }
 
 import Home from '../views/Home'
@@ -34,19 +34,19 @@ export default new VueRouter({
         {
             path: '/login',
             component: Login,
-            meta:{
-                isFooterHide:true
+            meta: {
+                isFooterHide: true
             }
         },
         {
             path: '/register',
             component: Register,
-            meta:{
-                isFooterHide:true
+            meta: {
+                isFooterHide: true
             }
         },
         {
-            name:'search',
+            name: 'search',
             path: '/search/:searchText?',
             component: Search,
         },
@@ -54,5 +54,11 @@ export default new VueRouter({
             path: '/detail/:goodsId?',
             component: Detail,
         }
-    ]
+    ],
+    scrollBehavior() {
+        return {
+            x: 0,
+            y: 0
+        }
+    }
 })
