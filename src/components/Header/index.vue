@@ -4,7 +4,8 @@
       <div class="header-top">
         <div class="header-login">
           <p>尚品汇欢迎您！</p>
-          <p>
+          <p v-if="this.name">{{this.name}}</p>
+          <p v-else>
             请&nbsp;<router-link to="/login">登录</router-link> |
             <router-link to="/register">免费注册</router-link>
           </p>
@@ -36,6 +37,7 @@
 </template> 
 
  <script>
+ import {mapState} from 'vuex'
 export default {
   name: "Header",
   data() {
@@ -70,6 +72,11 @@ export default {
         this.$router.push(location);
       }
     },
+  },
+  computed:{
+      ...mapState({
+          name:(state)=>state.user.name
+      })
   },
   watch: {
     //   进入home时清除搜索框

@@ -5,6 +5,7 @@ import 'nprogress/nprogress.css'
 
 import { Message } from 'element-ui'
 
+import store from '../store/index'
 const instance = axios.create({
     baseURL: '/api',
     // header:{
@@ -14,6 +15,11 @@ const instance = axios.create({
 
 instance.interceptors.request.use((config) => {
     NProgress.start()
+
+    const token = store.state.user.token;
+		if (token) {
+			config.headers.token = token;
+		}
     return config
 })
 

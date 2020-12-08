@@ -89,11 +89,16 @@
             </div>
             <div class="cartWrap">
               <div class="controls">
-                <input autocomplete="off" class="itxt" />
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
+                <el-input-number
+                  v-model="skuNum"
+                  class="input-number"
+                  controls-position="right"
+                  @change="handleChange"
+                  :min="1"
+                  :max="100"
+                ></el-input-number>
               </div>
-              <div class="add">
+              <div class="add" @click="addCart">
                 <a href="javascript:">加入购物车</a>
               </div>
             </div>
@@ -341,6 +346,11 @@ import TypeNav from "@comps/TypeNav";
 
 export default {
   name: "Detail",
+  data() {
+    return {
+      skuNum: 1, //商品数量
+    };
+  },
   computed: {
     ...mapGetters(["categoryView", "spuSaleAttrList", "skuInfo"]),
     ...mapState({
@@ -353,7 +363,20 @@ export default {
     TypeNav,
   },
   methods: {
-    ...mapActions(["getDetails"]),
+    ...mapActions(["getDetails", "addShopList"]),
+    async addCart() {
+      try {
+        // 发送请求加入购物扯
+        await this.addShopList({
+          skuId: this.skuInfo.id,
+          skuNum: this.skuNum,
+        });
+        // 一旦加入购物车跳转页面
+        this.$router.push(`/addcartsuccess?skuNum=${this.skuNum}`);
+      } catch (e) {
+        console.log(e);
+      }
+    },
   },
   mounted() {
     this.getDetails(this.$route.params.goodsId);
@@ -529,6 +552,9 @@ export default {
               position: relative;
               float: left;
               margin-right: 15px;
+              .input-number {
+                width: 100px;
+              }
 
               .itxt {
                 width: 38px;
@@ -566,6 +592,7 @@ export default {
 
             .add {
               float: left;
+              margin-left: 80px;
 
               a {
                 background-color: #e1251b;
